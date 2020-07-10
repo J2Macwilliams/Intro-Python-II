@@ -8,11 +8,14 @@ Assumptions -
         -- Error handling for unavailable choices
     -- reactivate loop for new room arrival
     -- if Player inputs q outside while loop ends & game ends
+    --Establish items
+
 """
 
 from room import Room
 from player import Player
-import random
+from item import Item
+
 
 # Declare all the rooms
 
@@ -47,7 +50,60 @@ room['narrow'].w_to = room['foyer']
 room['narrow'].n_to = room['treasure']
 room['treasure'].s_to = room['narrow']
 
-#
+# 
+#establish Items
+items = {
+    'tape': Item('Tape', 'Duck Tape, Strong & Bindable, this sticky fabric will hold together!'),
+    'lamp': Item('Lamp', 'Head Lamp, Light up the darkness with this hands free device.'),
+    'multi_tool': Item('Multi_Tool', 'Multi-Tool device with knife, universal allen / crescent wrench, and steel file.'),
+    'soda': Item('Soda', 'Sodium Bicarbonate for baking or cleaning...'),
+    'pickles': Item('Pickles', 'A fresh jar of crispy crunch vinegar Klausen pickles.'),
+    'sponge': Item('Sponge', 'Scratch free cleaning sponge.'),
+    'powder': Item('Powder', 'Explosive non destructive flash powder used for misdirection.'),
+    'key': Item('Key', 'Skeleton Key Unlocks all closed doors and cabinets.'),
+    'rope': Item('Rope', 'Lightweight Grappling Hook & Rope to form a climbing connection between 2 points'),
+    'crossbow': Item('Crossbow', 'Ancient Crossbow, but with a little TLC will fire without fail.'),
+    'chocolate': Item('Chocolate', 'The finest smoothest desireable Ghiradelli chocolate.'),
+    'wine': Item('Wine', 'Exquisitely crafted Napa Valley Silver Oak Cabernet Sauvignon with notes of dark ripe cherries, leather, vanilla, and coconut.')
+}
+
+# parse items to rooms
+room['outside'].items.append(items['soda'])
+room['outside'].items.append(items['multi_tool'])
+room['foyer'].items.append(items['crossbow'])
+room['foyer'].items.append(items['wine'])
+room['foyer'].items.append(items['sponge'])
+room['overlook'].items.append(items['key'])
+room['overlook'].items.append(items['tape'])
+room['narrow'].items.append(items['powder'])
+room['narrow'].items.append(items['chocolate'])
+room['narrow'].items.append(items['lamp'])
+room['treasure'].items.append(items['pickles'])
+room['treasure'].items.append(items['rope'])
+
+# print(items['soda'])
+
+# Create Functions
+def add_items(x, char, place):
+    # print(items[x].name)
+    # print(place.items)
+    if len(char.items) < 3:
+    #     selection = [d for d in place.items if d.includes(x)]
+    #     print(selection)
+    #     place.items.remove(items[x])
+    #     # place.items.remove(items[x].description)
+        char.items.append(items[x].name)
+        print(f'\nAcquired {x}.\n')
+    else:
+        print('\nCan\'t acquire. Inventory is full!\n')
+
+# def drop_item(x, char):
+    # if x in char.items:
+        # char.items.pop(items[x])
+        # place.items.append(x)
+    # else:
+    #     print(f'Character does not have {x}')
+    
 # Main
 #
 print('\nDiscoverFree\n')
@@ -65,48 +121,78 @@ elif x == 'y':
         y = input('Name your player: ')
         # Make a new player object that is currently in the 'outside' room.  
         current_room =  room['outside']
-        # print(current_room.n_to)
-        player1 = Player(y, current_room)
-        # print(player1)
-        print('\nWelcome %s. Clues along the way will guide your discovery.\n' % player1.name)
+        player = Player(y, current_room)
+        
+        print('\nWelcome \033[7m%s\033[0m.\n\nClues along the way will guide your discovery.\nSeek them out... \nA combination of certain \033[7m Tools \033[0m will fix the occurrence.\n\033[4mH\033[0mowever, you may only carry 3. \n\nOnly thru Discovery will the world be free.' % player.name)
+        # * Prints the current room name
         print(current_room)
+        print('The next step is of your decision. The Keys lie before you.. \033[7m T \033[0mravel through or \033[7m ? \033[0m ')
         # Write a loop that:
         is_where = True
-        while is_where:  
-            # * Prints the current room name
-            # print('You Are:%s' % player1)
-            go = input('Which direction shall we venture? n,s,e,w: ')
-            go.lower()
-            # print(go)
-            if go == 'n' and hasattr(current_room, 'n_to'):
-                current_room = current_room.n_to
-                player1.current_room = current_room
-                print(current_room)
-            elif go == 's' and hasattr(current_room, 's_to'):
-                current_room = current_room.s_to
-                player1.current_room = current_room
-                print(current_room)
-            elif go == 'e' and hasattr(current_room, 'e_to'):
-                current_room = current_room.e_to
-                player1.current_room = current_room
-                print(current_room)
-            elif go == 'w' and hasattr(current_room, 'w_to'):
-                current_room = current_room.w_to
-                player1.current_room = current_room
-                print(current_room)
-            elif go == 'q':
-                print('\nThank You for playing.\n')
-                is_where = False
-                is_playing = False
+        while is_where: 
+            
+            next = input('\033[3mChoose:\033[0m ')
+            option = next.lower()
+            if option == 'tools':
+                player.my_items()
+            elif len(next) > 1:
+                action = next.split(' ')
+                verb = action[0].lower()
+                thing = action[1].lower()
+                
+                if verb == 'get' or verb == 'take':
+                    print(thing)
+                    add_items(thing, player, current_room)
+                elif verb == 'drop':
+                    print(thing)
+                    # drop_item(thing, player)
+                
             else:
-                print('\nThat location doesn\'t exist. Please Try again.\n')
+                
+                if next == '?' and len(current_room.items) < 1:
+                    print('There are no tools here.')
+                elif next == '?':  
+                    current_room.search()
+                
+                elif next == 't':
+                    go = input('\033[3mWhich direction shall we venture?\033[0m n,s,e,w: ')
+                    go.lower()
+                
+                    if go == 'n' and hasattr(current_room, 'n_to'):
+                        current_room = current_room.n_to
+                        player.current_room = current_room
+                        # * Prints the current description (the textwrap module might be useful here).
+                        print(current_room)
+                        # * Waits for user input and decides what to do.
+                    elif go == 's' and hasattr(current_room, 's_to'):
+                        current_room = current_room.s_to
+                        player.current_room = current_room
+                        # * Prints the current description (the textwrap module might be useful here).
+                        print(current_room)
+                        # * Waits for user input and decides what to do.
+                    elif go == 'e' and hasattr(current_room, 'e_to'):
+                        current_room = current_room.e_to
+                        player.current_room = current_room
+                        # * Prints the current description (the textwrap module might be useful here).
+                        print(current_room)
+                        # * Waits for user input and decides what to do.
+                    elif go == 'w' and hasattr(current_room, 'w_to'):
+                        current_room = current_room.w_to
+                        player.current_room = current_room
+                        # * Prints the current description (the textwrap module might be useful here).
+                        print(current_room)
+                        # * Waits for user input and decides what to do.
+                    elif go == 'q':
+                        # If the user enters "q", quit the game.
+                        print('\nThank You for playing.\n')
+                        is_where = False
+                        is_playing = False
+                    else:
+                        # Print an error message if the movement isn't allowed.
+                        # If the user enters a cardinal direction, attempt to move to the room there.
+                        print('\nThat location doesn\'t exist. Please Try again.\n')
 else:
     print("Something Went Wrong.")
 
-# * Prints the current description (the textwrap module might be useful here).
-# * Waits for user input and decides what to do.
-#
-# If the user enters a cardinal direction, attempt to move to the room there.
-# Print an error message if the movement isn't allowed.
-#
-# If the user enters "q", quit the game.
+
+
