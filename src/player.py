@@ -12,6 +12,6 @@ class Player():
         return ' %s' % (self.current_room)
 
     def my_items(self):
-        print(f"I'm carrying: {self.items}") 
+        print(f" \033[3m I'm carrying: \033[0m {self.items}\n") 
 
     

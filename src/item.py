@@ -5,5 +5,5 @@ class Item:
         self.description = description
         
     def __repr__(self):
-        return '\n %s - %s' % (self.name, self.description)
+        return '\033[7m %s \033[0m -- %s' % (self.name, self.description)
 
