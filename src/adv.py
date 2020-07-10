@@ -81,32 +81,30 @@ room['narrow'].items.append(items['lamp'])
 room['treasure'].items.append(items['pickles'])
 room['treasure'].items.append(items['rope'])
 
-# print(items['soda'])
-
 # Create Functions
 def add_items(x, char, place):
-    # print(items[x].name)
-    # print(place.items)
+    d = items[x]
+    print(d)
     if len(char.items) < 3:
-    #     selection = [d for d in place.items if d.includes(x)]
-    #     print(selection)
-    #     place.items.remove(items[x])
-    #     # place.items.remove(items[x].description)
-        char.items.append(items[x].name)
-        print(f'\nAcquired {x}.\n')
+        place.items.remove(d)
+        char.items.append(d)
+        print(f'\n\033[7m Acquired {x}. \033[0m\n')
     else:
-        print('\nCan\'t acquire. Inventory is full!\n')
+        print('\n\033[7m Can\'t acquire. Inventory is full! \033[0m\n')
 
-# def drop_item(x, char):
-    # if x in char.items:
-        # char.items.pop(items[x])
-        # place.items.append(x)
-    # else:
-    #     print(f'Character does not have {x}')
+def drop_item(x, char, place):
+    d = items[x]
+    found = [x for x in char.items if x == d]
+    if found:
+        char.items.remove(d)
+        place.items.append(d)
+        print(f'{d} has been dropped {place}')
+    else:
+        print(f'\033[3m Character does not have {d}.\033[0m')
     
 # Main
 #
-print('\nDiscoverFree\n')
+print('\n\033[1m ? DiscoverFree ! \033[0m\n')
 
 x = input('Start Game? Y or N:')
 x.lower()
@@ -123,17 +121,17 @@ elif x == 'y':
         current_room =  room['outside']
         player = Player(y, current_room)
         
-        print('\nWelcome \033[7m%s\033[0m.\n\nClues along the way will guide your discovery.\nSeek them out... \nA combination of certain \033[7m Tools \033[0m will fix the occurrence.\n\033[4mH\033[0mowever, you may only carry 3. \n\nOnly thru Discovery will the world be free.' % player.name)
+        print('\nWelcome \033[7m %s \033[0m.\n\nClues along the way will guide your discovery.\nSeek them out... \nA combination of certain \033[7m Tools \033[0m will fix the occurrence.\n\033[4mH\033[0mowever, you may only carry 3. \n\nOnly thru Discovery will the world be free.' % player.name)
         # * Prints the current room name
         print(current_room)
-        print('The next step is of your decision. The Keys lie before you.. \033[7m T \033[0mravel through or \033[7m ? \033[0m ')
+        print('The next step is of your decision. The Keys lie before you.. \033[7m T \033[0mravel through or \033[7m ? \033[0m \n')
         # Write a loop that:
         is_where = True
         while is_where: 
-            
+           
             next = input('\033[3mChoose:\033[0m ')
             option = next.lower()
-            if option == 'tools':
+            if option == 'inventory':
                 player.my_items()
             elif len(next) > 1:
                 action = next.split(' ')
@@ -141,18 +139,21 @@ elif x == 'y':
                 thing = action[1].lower()
                 
                 if verb == 'get' or verb == 'take':
-                    print(thing)
                     add_items(thing, player, current_room)
                 elif verb == 'drop':
                     print(thing)
-                    # drop_item(thing, player)
-                
+                    drop_item(thing, player, current_room)
+                else:
+                    print('Unable to perform request')
             else:
-                
-                if next == '?' and len(current_room.items) < 1:
+                if option == 'i':
+                    player.my_items()
+                elif next == '?' and len(current_room.items) < 1:
                     print('There are no tools here.')
                 elif next == '?':  
                     current_room.search()
+                    print('To acquire: Type \033[2mget\033[0m \033[3mor\033[0m \033[2mtake\033[0m \033[2mitem\033[0m, To Unload: \033[2m drop item\033[0m \n')
+                    
                 
                 elif next == 't':
                     go = input('\033[3mWhich direction shall we venture?\033[0m n,s,e,w: ')
