@@ -55,7 +55,7 @@ room['treasure'].s_to = room['narrow']
 items = {
     'tape': Item('Tape', 'Duck Tape, Strong & Bindable, this sticky fabric will hold together!'),
     'lamp': Item('Lamp', 'Head Lamp, Light up the darkness with this hands free device.'),
-    'multi_tool': Item('Multi_Tool', 'Multi-Tool device with knife, universal allen / crescent wrench, and steel file.'),
+    'tool': Item('Tool', 'Multi-Tool device with knife, universal allen / crescent wrench, and steel file.'),
     'soda': Item('Soda', 'Sodium Bicarbonate for baking or cleaning...'),
     'pickles': Item('Pickles', 'A fresh jar of crispy crunch vinegar Klausen pickles.'),
     'sponge': Item('Sponge', 'Scratch free cleaning sponge.'),
@@ -69,7 +69,7 @@ items = {
 
 # parse items to rooms
 room['outside'].items.append(items['soda'])
-room['outside'].items.append(items['multi_tool'])
+room['outside'].items.append(items['tool'])
 room['foyer'].items.append(items['crossbow'])
 room['foyer'].items.append(items['wine'])
 room['foyer'].items.append(items['sponge'])
@@ -133,8 +133,8 @@ elif x == 'y':
             option = next.lower()
             if option == 'inventory':
                 player.my_items()
-            elif len(next) > 1:
-                action = next.split(' ')
+            elif len(option) > 1:
+                action = option.split(' ')
                 verb = action[0].lower()
                 thing = action[1].lower()
                 
@@ -148,14 +148,14 @@ elif x == 'y':
             else:
                 if option == 'i':
                     player.my_items()
-                elif next == '?' and len(current_room.items) < 1:
+                elif option == '?' and len(current_room.items) < 1:
                     print('There are no tools here.')
-                elif next == '?':  
+                elif option == '?':  
                     current_room.search()
                     print('To acquire: Type \033[2mget\033[0m \033[3mor\033[0m \033[2mtake\033[0m \033[2mitem\033[0m, To Unload: \033[2m drop item\033[0m \n')
                     
                 
-                elif next == 't':
+                elif option == 't':
                     go = input('\033[3mWhich direction shall we venture?\033[0m n,s,e,w: ')
                     go.lower()
                 
